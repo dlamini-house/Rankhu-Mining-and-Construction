@@ -126,3 +126,40 @@ function initContactForm() {
     }
   });
 }
+
+/* ==========================================
+   5. LIVE COMMODITY TICKER
+   ========================================== */
+function initCommodityTicker() {
+  const goldPriceEl = document.getElementById('gold-price');
+  const goldChangeEl = document.getElementById('gold-change');
+
+  if (!goldPriceEl) return;
+
+  // Fetch Gold Spot Price via open API
+  fetch('https://api.metals.live/v1/spot/gold')
+    .then(response => response.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        const spotGold = data[0].gold;
+        goldPriceEl.textContent = `$${parseFloat(spotGold).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        goldChangeEl.textContent = 'Live Spot (USD/oz)';
+        goldChangeEl.className = 'change positive';
+      }
+    })
+    .catch(() => {
+      // Fallback display if offline/rate-limited
+      goldPriceEl.textContent = '$2,650.00';
+      goldChangeEl.textContent = 'USD/oz';
+      goldChangeEl.className = 'unit';
+    });
+}
+
+// Add initCommodityTicker to DOMContentLoaded listener
+document.addEventListener('DOMContentLoaded', () => {
+  initNavigation();
+  initHeaderScroll();
+  initActiveNavigation();
+  initContactForm();
+  initCommodityTicker();
+});
